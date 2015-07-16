@@ -1,0 +1,13 @@
+bool vac (const Patient& p)
+{....}
+
+doctor D ;  d.Addpatient(p)
+
+d.searchPatience(vac); // trqbva da izkara vsi4ki pacienti koito sa za vaksina ... 
+
+
+
+
+
+
+if (pred (list[i]))

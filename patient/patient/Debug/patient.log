@@ -1,0 +1,17 @@
+﻿Build started 4/6/2015 12:59:21 PM.
+     1>Project "C:\Users\grade\Desktop\patient\patient\patient.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Doctor.cpp main.cpp patient.cpp
+         patient.cpp
+         main.cpp
+         Doctor.cpp
+     1>c:\users\grade\desktop\patient\patient\doctor.cpp(6): error C2512: 'Patient' : no appropriate default constructor available
+     1>c:\users\grade\desktop\patient\patient\doctor.cpp(10): error C2512: 'Patient' : no appropriate default constructor available
+     1>c:\users\grade\desktop\patient\patient\doctor.cpp(17): error C2512: 'Patient' : no appropriate default constructor available
+     1>c:\users\grade\desktop\patient\patient\doctor.cpp(31): error C2512: 'Patient' : no appropriate default constructor available
+         Generating Code...
+     1>Done Building Project "C:\Users\grade\Desktop\patient\patient\patient.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.95
