@@ -1,0 +1,273 @@
+#include<iostream>
+#include<string>
+#include<cstring>
+using namespace std;
+
+//linked-list implementation
+template<class T>
+class Stack
+{
+	struct Node
+	{
+		T value;
+		Node*next;
+	};
+	Node*top;
+
+public:
+	Stack()
+	{
+		top = NULL;
+	}
+	~Stack()
+	{
+		while (!isEmpty())
+			pop();
+	}
+	void push(T val)
+	{
+		Node*temp = new Node;
+		temp->value = val;
+		if (top == NULL)
+		{
+			top = temp;
+			temp->next = NULL;
+		}
+		else
+		{
+			temp->next = top;
+			top = temp;
+		}
+	}
+	T& head()
+	{
+		return top->value;
+	}
+	bool isEmpty()
+	{
+		if (top == NULL) return true;
+		else return false;
+	}
+	void pop()
+	{
+		if (!isEmpty())
+		{
+			Node*temp = top;
+			top = top->next;
+			delete temp;
+		}
+	}
+
+};
+char* CharactersMultipliedByDigit(int number, char*text);
+char* ConcatTwoStrings(char*arrA, char*arrB);
+
+
+//filling stack with 
+struct myStruct
+{
+public:
+	int valaue;
+	char*text;
+public:
+	myStruct(int number = 0, char*text = "Empty")
+	{
+		this->valaue = number;
+		if (strcmp(text, "Empty") != 0)
+		{
+			int size = strlen(text);
+			this->text = new char[size + 1];
+			strcpy(this->text, text);
+		}
+		//else text = NULL;
+	}
+	~myStruct(){ delete text; }
+};
+bool isDigit(char temp)
+{
+	if (temp - '0' <= 9 && temp - '0' >= 0)
+		return true;
+	else return false;
+}
+
+int charToInteger(char*number)
+{
+	int size = strlen(number) - 1;
+	int temp = 1;
+	int numberAfterConvertion = 0;
+
+	for (int i = 0; i < size + 1; i++)
+	{
+		numberAfterConvertion += ((number[size - i] - '0') * temp);
+		temp *= 10;
+	}
+
+	return numberAfterConvertion;
+}
+
+
+int main()
+{
+	Stack<myStruct*>myStack;
+	const int MAX_SIZE = 1024;  // maximum input
+	const int MAX_DIGITS = 10;  //max number of digits for a number multyplying with a string
+
+	char*input = new char[MAX_SIZE];
+
+	cin >> input;
+
+	int goneThroughDigits = 0;
+	int size = strlen(input);
+	int copyOfSize = size;
+	bool hasEnteredAnyPreviousIf = false;
+	int iterator = 0; // going through the input
+
+	int currentNumber = 0;
+	while (size != 0 && iterator<copyOfSize)
+	{
+		int indexInArrayOfChars = 0; //0 
+		char*temp = new char[MAX_DIGITS];
+		//myStruct*currentTextAndNumberOfRepeating= new
+
+		if (isDigit(input[iterator]) == true)       ///////////   getting consecutive numbers
+		{
+			hasEnteredAnyPreviousIf = true;
+			goneThroughDigits++;
+			temp[indexInArrayOfChars++] = input[iterator++];   //  indexin array of chars
+
+			while (isDigit(input[iterator]) == true)
+			{
+				temp[indexInArrayOfChars++] = input[iterator++];
+			}
+			temp[indexInArrayOfChars] = '\0';// terminatind char array
+			currentNumber = charToInteger(temp);     /////////  getting the concrete number
+			//delete temp;
+		}
+		if (input[iterator++] == '(')
+		{
+			hasEnteredAnyPreviousIf = true;
+			bool flag = true;
+			indexInArrayOfChars = 0;
+
+
+			while (input[iterator] != ')')
+			{
+				if (isDigit(input[iterator]) == true)
+				{
+
+					goneThroughDigits++;
+					if (indexInArrayOfChars == 0)
+					{
+						myStruct*currentTextAndNumberofRepeating = new myStruct(currentNumber, "Empty"); // case digit(digit...
+						myStack.push(currentTextAndNumberofRepeating);
+						flag = false;
+						break;
+
+					}
+					else
+					{
+						myStruct*currentTextAndNumberofRepeating = new myStruct(currentNumber, temp); // case digit(Text digit...
+						myStack.push(currentTextAndNumberofRepeating);
+						
+					}
+					currentNumber = 0; // reseting for reuse
+					iterator++;
+					
+
+				}
+				else
+				{
+					goneThroughDigits--;
+					temp[indexInArrayOfChars++] = input[iterator++];
+
+				}
+
+			}
+
+			if (flag == false) // number following after the bracket , back in the outter while
+				continue;
+
+			temp[indexInArrayOfChars] = '\0';
+			myStruct*currentTextAndNumberofRepeating = new myStruct(currentNumber, temp);
+			myStack.push(currentTextAndNumberofRepeating);
+		}
+		//trivial , just  strings
+		if (hasEnteredAnyPreviousIf == false)
+		{
+			for (int i = 0; i < size; i++)
+				cout << input[i];
+			break;
+		}
+
+
+		//iterator++;
+		size--;
+	}
+
+	myStruct* myStackIterator=new myStruct;
+	char*print = new char[100];
+	bool flagT = false;
+	char*temp = new char[100];
+	while (!myStack.isEmpty())
+	{
+		myStackIterator = myStack.head(); myStack.pop();
+
+		if (strcmp(myStackIterator->text, "Empty") == 0)
+		{
+			temp = CharactersMultipliedByDigit(myStackIterator->valaue, print);
+		}
+		else
+		temp = CharactersMultipliedByDigit(myStackIterator->valaue, myStackIterator->text);
+		
+		if (flagT == false)
+		{
+			strcpy(print, temp);
+			int n = strlen(temp);
+			print[n] = '\0';
+			flagT = true;
+		}
+		else
+		{
+			print = ConcatTwoStrings(temp, print);
+		}
+	
+	}
+	cout << print << endl;
+	
+	
+	system("pause");
+	return 0;
+}
+char* CharactersMultipliedByDigit(int number,char*text)
+{
+	int size = strlen(text);
+	char* returnedValue = new char[number*size+1];
+	int position = 0;
+	for (int i = 0; i < number; i++)
+	{
+		for (int j = 0; j < size; j++)
+			returnedValue[position++] = text[j];
+			
+	}
+
+	returnedValue[number*size] = '\0';
+
+	return returnedValue;
+}
+char* ConcatTwoStrings(char*arrA, char*arrB)
+{
+	if (arrB == NULL)
+		return "dsa";
+	int sizeA = strlen(arrA);
+	int sizeB = strlen(arrB);
+	char*concatanedString = new char[sizeA + sizeB + 1];
+
+	for (int i = 0; i < sizeA; i++)
+		concatanedString[i] = arrA[i];
+	for (int i = sizeA, j = 0; i < sizeB + sizeA, j < sizeB; i++, j++)
+		concatanedString[i] = arrB[j];
+
+	concatanedString[sizeA + sizeB] = '\0';
+
+	return concatanedString;
+}
