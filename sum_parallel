@@ -1,0 +1,134 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <omp.h>
+
+int sum_simple(int a[], int len)
+{
+	int s = 0, i;
+	for (i = 0; i < len; ++i)
+	{
+		double x = sqrt(a[i]*i)/sin(a[i]*log(i));
+		s += a[i];
+	}
+	return s;
+}
+
+int * generate(int size)
+{
+	int i;
+	srand(0);
+	int* a = (int*) malloc(size*sizeof(int));
+	for (i = 0; i < size; ++i)
+		a[i] = rand()%10;
+	return a;
+}
+
+int sum_no_lock(int a[], int len)
+{
+	int s = 0, i;
+#pragma omp parallel for
+	for (i = 0; i < len; ++i)
+		s += a[i];
+	return s;
+}
+
+int sum_cs(int a[], int len)
+{
+	int s = 0, i;
+#pragma omp parallel for
+	for (i = 0; i < len; ++i)
+#pragma omp critical
+		s += a[i];
+	return s;
+}
+
+int sum_atomic(int a[], int len)
+{
+	int s = 0, i;
+#pragma omp parallel for
+	for (i = 0; i < len; ++i)
+#pragma omp atomic
+		s += a[i];
+	return s;
+}
+
+int sum_buff(int a[], int len)
+{
+	int s = 0, i;
+	int* buff;
+	int num = omp_get_max_threads();
+
+	buff = (int*)malloc(num*sizeof(int));
+	for (i = 0; i < num; ++i)
+		buff[i] = 0;
+
+#pragma omp parallel for
+	for (i = 0; i < len; ++i)
+	{
+//		double x = sqrt(a[i]*i)/sin(a[i]*log(i));
+		buff[omp_get_thread_num()] += a[i];
+	}
+
+	for (i = 0; i < num; ++i)
+		s += buff[i];
+	free(buff);
+	return s;
+}
+
+int sum_manual(int a[], int len)
+{
+	int s = 0, i, idx;
+	int* buff;
+	int num = omp_get_max_threads();
+
+	buff = (int*)malloc(num*sizeof(int));
+	for (i = 0; i < num; ++i)
+		buff[i] = 0;
+
+#pragma omp parallel private(idx, i)
+	{
+		int chunk = len / num;
+		int end;
+		idx = omp_get_thread_num();
+		i = idx * chunk;
+		end = (i+chunk) < len ? i+chunk : len;
+		for (; i < end; ++i)
+		{
+			buff[idx] += a[i];
+		}
+#pragma omp barrier
+#pragma omp master
+		for (i = 0; i < num; ++i)
+			s += buff[i];
+	}
+	free(buff);
+	return s;
+}
+
+
+
+
+
+
+int main()
+{
+	int size = 10000000, sum;
+	int cnt = 10;
+	int * a = generate(size);
+	printf("%d\n", sum_simple(a, size));
+
+	while(cnt--)
+	{
+		sum = sum_simple(a, size);
+		//sum = sum_no_lock(a, size);
+		//sum = sum_cs(a, size);
+		//sum = sum_atomic(a, size);
+		//sum = sum_buff(a, size);
+		//sum = sum_manual(a, size);
+	}
+
+	printf("%d\n", sum);
+	free(a);
+	return 0;
+}
