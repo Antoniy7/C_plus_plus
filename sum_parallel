@@ -26,7 +26,8 @@ int * generate(int size)
 
 int sum_no_lock(int a[], int len)
 {
-	int s = 0, i;
+	int s = 0
+	int i;
 #pragma omp parallel for
 	for (i = 0; i < len; ++i)
 		s += a[i];
